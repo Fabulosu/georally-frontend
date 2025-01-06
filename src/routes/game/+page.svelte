@@ -25,6 +25,17 @@
 		middle = params.get('middleCountry');
 		target = params.get('endCountry');
 
+		socket.emit('verifyGame', {gameId, start, middle, target});
+
+		socket.on('gameVerified', (data) => {
+			if (data.invalid === true) {
+				window.location.href = '/';
+				console.log('Invalid game');
+			} else {
+				console.log('Game verified');
+			}
+		});
+
 		currentCountry = start;
 		path = [...path, currentCountry];
 
