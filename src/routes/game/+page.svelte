@@ -1,24 +1,26 @@
 <script lang="ts">
 	import GameLost from '$lib/components/GameLost.svelte';
+	import GameWon from '$lib/components/GameWon.svelte';
 	import OpponentDisconnect from '$lib/components/OpponentDisconnect.svelte';
 	import WorldMap from '$lib/components/WorldMap.svelte';
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
 
 	let socket = io('http://192.168.0.107:3000');
-	let gameId: string | null, start: string | null, middle: string | null, target: string | null;
+	let gameId: string | null, start: string | null, middle: string | null, target: string | null, difficulty: string | null;
 	let error = '';
 	let currentCountry: string | null;
 	let path: any[] = [];
 
 	let gameOver = false;
+	let gameWon = false;
+
 	let opponentDisconnected = false;
 
 	let userId: string | null;
 	let oMoves = 0;
 
 	let userInput = '';
-	let win = false;
 
 	onMount(() => {
 		userId = window.localStorage.getItem('userId');
@@ -28,8 +30,9 @@
 		start = params.get('startCountry');
 		middle = params.get('middleCountry');
 		target = params.get('endCountry');
+		difficulty = params.get('difficulty');
 
-		socket.emit('verifyGame', {gameId, start, middle, target});
+		socket.emit('verifyGame', {gameId, start, middle, target, difficulty});
 
 		socket.on('gameVerified', (data) => {
 			if (data.invalid === true) {
@@ -47,6 +50,10 @@
 			const elements = document.getElementsByName(start);
 			elements.forEach((element) => {
 				(element as HTMLElement).classList.add('fill-green-500');
+				if ((element as HTMLElement).classList.contains('hidden')) {
+					(element as HTMLElement).classList.remove('hidden');
+					(element as HTMLElement).classList.add('fill-green-500/75');
+				}
 			});
 		}
 
@@ -54,6 +61,10 @@
 			const elements = document.getElementsByName(middle);
 			elements.forEach((element) => {
 				(element as HTMLElement).classList.add('fill-yellow-500');
+				if ((element as HTMLElement).classList.contains('hidden')) {
+					(element as HTMLElement).classList.remove('hidden');
+					(element as HTMLElement).classList.add('fill-yellow-500/75');
+				}
 			});
 		}
 
@@ -61,6 +72,10 @@
 			const elements = document.getElementsByName(target);
 			elements.forEach((element) => {
 				(element as HTMLElement).classList.add('fill-blue-500');
+				if ((element as HTMLElement).classList.contains('hidden')) {
+					(element as HTMLElement).classList.remove('hidden');
+					(element as HTMLElement).classList.add('fill-blue-500/75');
+				}
 			});
 		}
 
@@ -68,7 +83,9 @@
 		allPathElements.forEach((element) => {
 			const name = element.getAttribute('name');
 			if (name !== start && name !== middle && name !== target) {
-				(element as HTMLElement).classList.add('hidden');
+				if (difficulty === 'hard') {
+					(element as HTMLElement).classList.add('hidden');
+				}
 			}
 		});
 
@@ -93,13 +110,15 @@
 				const elements = document.getElementsByName(currentCountry);
 				elements.forEach((element) => {
 					(element as HTMLElement).classList.add('fill-orange-500');
-					(element as HTMLElement).classList.remove('hidden');
+					if (difficulty === 'hard') {
+						(element as HTMLElement).classList.remove('hidden');
+					}
 				});
 			}
 
 			if (currentCountry === target && path.includes(middle)) {
 				console.log(start, middle, target, currentCountry);
-				win = true;
+				gameWon = true;
 				socket.emit('gameOver', { gameId, userId, moves: path.length });
 			}
 		});
@@ -112,6 +131,10 @@
 			gameOver = true;
 			oMoves = data.opponentMoves;
 		});
+
+		socket.on('gameWon', (data) => {
+			gameWon = true;
+		})
 	});
 
 	function submitNeighbour() {
@@ -160,7 +183,7 @@
 				type="text"
 				bind:value={userInput}
 				placeholder="Type a neighbor country"
-				disabled={win}
+				disabled={gameWon}
 				class="flex-1 rounded-lg border-2 border-orange-300 bg-white px-4 py-2 text-orange-800 placeholder-orange-300
                     focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50
                     disabled:bg-gray-100 disabled:text-gray-500"
@@ -169,17 +192,8 @@
 				}}
 			/>
 
-			<button on:click={submitNeighbour} disabled={win}>Submit</button>
+			<button on:click={submitNeighbour} disabled={gameWon}>Submit</button>
 		</div>
-		{#if win}
-			<div
-				class="mb-6 transform rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 p-4 shadow-lg transition duration-300 hover:shadow-xl"
-			>
-				<p class="text-center text-lg font-medium text-white">
-					🎉 Congratulations! You have successfully completed the path!
-				</p>
-			</div>
-		{/if}
 		<div
 			class="rounded-xl border-2 border-orange-400 bg-white p-4 shadow-lg"
 			style="background-color: lightblue;"
@@ -252,6 +266,10 @@
 
 {#if gameOver}
 	<GameLost opponentMoves={oMoves} yourMoves={path.length} />
+{/if}
+
+{#if gameWon}
+	<GameWon yourMoves={path.length} />
 {/if}
 
 {#if opponentDisconnected && !gameOver}

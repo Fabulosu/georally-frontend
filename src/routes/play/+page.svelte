@@ -1,18 +1,21 @@
 <script lang="ts">
-	import { getSocket } from '$lib/socket';
+	import { io } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 
-	let socket = getSocket();
+	let socket = io('http://192.168.0.107:3000', {autoConnect: false});
 	let status = 'Connecting...';
 	let gameId: string;
 	let playersInQueue: number;
+	let inQueue = false;
+	let difficulty = "easy";
 
 	let userId: string | null;
 
 	onMount(() => {
 		socket.on('connect', () => {
 			status = 'Searching for worthy opponents...';
-			socket.emit('joinQueue');
+			socket.emit('joinQueue', {difficulty});
+			inQueue = true;
 		});
 
 		userId = window.localStorage.getItem('userId');
@@ -28,7 +31,7 @@
 			status = `Game found! Starting from ${data.start} to ${data.target}`;
 
 			setTimeout(() => {
-				window.location.href = `/game?gameId=${gameId}&startCountry=${data.start}&middleCountry=${data.middle}&endCountry=${data.target}`;
+				window.location.href = `/game?gameId=${gameId}&startCountry=${data.start}&middleCountry=${data.middle}&endCountry=${data.target}&difficulty=${data.difficulty}`;
 			}, 2000);
 		});
 
@@ -37,11 +40,21 @@
 		});
 	});
 
+	function startGame() {
+		socket.connect();
+	}
+
+	function cancelSearch() {
+		socket.disconnect();
+		inQueue = false;
+	}
+
 	onDestroy(() => {
 		if (socket) socket.disconnect();
 	});
 </script>
 
+{#if inQueue}
 <main class="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
 	<nav class="bg-white shadow-md">
 		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -102,6 +115,7 @@
 				</div>
 				<div class="mt-8 flex justify-center">
 					<button
+					on:click={cancelSearch}
 						class="rounded-full bg-gray-200 px-6 py-2 font-medium text-gray-700 transition hover:bg-gray-300"
 					>
 						Cancel Search
@@ -168,3 +182,91 @@
 		</div>
 	</div>
 </main>
+{:else}
+<main class="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
+    <nav class="bg-white shadow-md">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <div class="flex-shrink-0">
+                    <span class="text-2xl font-bold text-orange-500">GeoRally</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-4">
+                        <a href="/" class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600">Leaderboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div class="flex flex-col items-center justify-center">
+            <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-gray-900">Game Settings</h2>
+                    <p class="mt-2 text-gray-600">Select difficulty levels and play mode</p>
+                </div>
+
+                <div class="mt-8 space-y-6">
+                    <div class="space-y-4">
+                        <p class="text-sm font-medium text-gray-700">Select Difficulty Levels</p>
+                        <div class="space-y-3">
+                            <label class="flex items-center space-x-3">
+                                <input on:change={() => difficulty = 'easy'} checked={difficulty === 'easy'} type="radio" class="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+                                <span class="text-gray-700">Easy</span>
+                            </label>
+                            <label class="flex items-center space-x-3">
+                                <input on:change={() => difficulty = 'normal'} checked={difficulty === 'normal'} type="radio" class="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+                                <span class="text-gray-700">Normal</span>
+                            </label>
+                            <label class="flex items-center space-x-3">
+                                <input on:change={() => difficulty = 'hard'} checked={difficulty === 'hard'} type="radio" class="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500">
+                                <span class="text-gray-700">Hard</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <button on:click={startGame} class="w-full rounded-full bg-orange-500 px-6 py-3 font-medium text-white transition hover:bg-orange-600">
+                            Play Game
+                        </button>
+                        <button class="w-full rounded-full bg-white px-6 py-3 font-medium text-orange-500 transition border-2 border-orange-500 hover:bg-orange-50">
+                            Play with Friends
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 w-full max-w-md rounded-xl bg-white p-6 shadow-md">
+                <h3 class="mb-4 text-lg font-semibold text-gray-900">Game Modes</h3>
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-3">
+                        <svg class="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-sm text-gray-600">
+                            Easy: Perfect for beginners, with more time and hints available
+                        </p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <svg class="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-sm text-gray-600">
+                            Normal: Balanced gameplay with moderate time limits
+                        </p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <svg class="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <p class="text-sm text-gray-600">
+                            Hard: Challenge yourself with shorter time limits and complex routes
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{/if}
