@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Dialog from '$lib/components/Dialog.svelte';
+	import GameLost from '$lib/components/GameLost.svelte';
+	import OpponentDisconnect from '$lib/components/OpponentDisconnect.svelte';
 	import WorldMap from '$lib/components/WorldMap.svelte';
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
@@ -9,7 +10,10 @@
 	let error = '';
 	let currentCountry: string | null;
 	let path: any[] = [];
+
 	let gameOver = false;
+	let opponentDisconnected = false;
+
 	let userId: string | null;
 	let oMoves = 0;
 
@@ -98,6 +102,10 @@
 				win = true;
 				socket.emit('gameOver', { gameId, userId, moves: path.length });
 			}
+		});
+
+		socket.on('opponentLeft', () => {
+			opponentDisconnected = true;
 		});
 
 		socket.on('opponentWon', (data) => {
@@ -243,5 +251,9 @@
 </main>
 
 {#if gameOver}
-	<Dialog opponentMoves={oMoves} yourMoves={path.length} />
+	<GameLost opponentMoves={oMoves} yourMoves={path.length} />
+{/if}
+
+{#if opponentDisconnected && !gameOver}
+	<OpponentDisconnect />
 {/if}
