@@ -2,7 +2,7 @@
 	import { io } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 
-	let socket = io('http://192.168.0.107:3000', {autoConnect: false});
+	let socket = io('georally-backend-production.up.railway.app', {autoConnect: false});
 	let status = 'Connecting...';
 	let gameId: string;
 	let playersInQueue: number;

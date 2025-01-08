@@ -6,7 +6,7 @@
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
 
-	let socket = io('http://192.168.0.107:3000');
+	let socket = io('georally-backend-production.up.railway.app');
 	let gameId: string | null, start: string | null, middle: string | null, target: string | null, difficulty: string | null;
 	let error = '';
 	let currentCountry: string | null;
