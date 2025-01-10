@@ -11,7 +11,7 @@
 			const startTime: number = Date.now();
 
 			const updateProgress = () => {
-				const elapsed: number = (Date.now() - startTime) / 1000;
+				const elapsed: number = Math.floor((Date.now() - startTime) / 1000);
 				timeLeft = Math.max(totalTime - elapsed, 0);
 
 				const percentage: number = (timeLeft / totalTime) * 100;
@@ -19,9 +19,6 @@
 
 				if (timeLeft > 0) {
 					requestAnimationFrame(updateProgress);
-				} else {
-					progressBar.style.width = "0%";
-					console.log('Countdown complete!');
 				}
 			};
 
@@ -32,13 +29,12 @@
 	});
 </script>
 
-
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
     <div class="mx-auto w-full max-w-md px-4 sm:px-6 lg:px-8">
         <div class="animate-bounce-in transform rounded-2xl bg-white p-8 shadow-xl">
-            <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-yellow-100">
+            <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-orange-100">
                 <svg 
-                    class="h-12 w-12 text-yellow-500"
+                    class="h-12 w-12 text-orange-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -55,14 +51,14 @@
             <div class="mb-8 text-center">
                 <h2 class="text-3xl font-bold text-gray-900">Opponent Disconnected</h2>
                 <p class="mt-2 text-gray-600">Your opponent has disconnected from the game.</p>
-                <p class="mt-4 text-xl font-semibold text-yellow-500">
+                <p class="mt-4 text-xl font-semibold text-orange-500">
                     Waiting for reconnection: <span id="countdown">{Math.floor(timeLeft)}</span>s
                 </p>
             </div>
 
             <div class="relative pt-1">
                 <div class="h-2 w-full rounded-full bg-gray-200">
-                    <div id="progress-bar" class="h-2 rounded-full bg-yellow-500 transition-all duration-1000" style="width: 100%"></div>
+                    <div id="progress-bar" class="h-2 rounded-full bg-orange-500 transition-all duration-1000" style="width: 100%"></div>
                 </div>
             </div>
         </div>
