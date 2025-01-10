@@ -12,6 +12,7 @@
 	let currentCountry: string | null;
 	let path: any[] = [];
 
+	let visitedMiddleCountry = false;
 	let gameOver = false;
 	let gameWon = false;
 
@@ -107,6 +108,9 @@
 			console.log(data);
 
 			if (currentCountry) {
+				if (currentCountry === middle) {
+					visitedMiddleCountry = true;
+				}
 				const elements = document.getElementsByName(currentCountry);
 				elements.forEach((element) => {
 					(element as HTMLElement).classList.add('fill-orange-500');
@@ -138,7 +142,11 @@
 	});
 
 	function submitNeighbour() {
-		socket.emit('submit-neighbour', { gameId, country: currentCountry, neighbour: userInput });
+		if (!visitedMiddleCountry) {
+			socket.emit('submit-neighbour', { gameId, country: currentCountry, neighbour: userInput, targetCountry: middle });
+		} else {
+			socket.emit('submit-neighbour', { gameId, country: currentCountry, neighbour: userInput, targetCountry: target });
+		}
 	}
 
 	onDestroy(() => {
@@ -272,6 +280,6 @@
 	<GameWon yourMoves={path.length} />
 {/if}
 
-{#if opponentDisconnected && !gameOver}
+{#if opponentDisconnected && !gameOver && !gameWon}
 	<OpponentDisconnect />
 {/if}
