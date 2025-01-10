@@ -2,7 +2,7 @@
 	import { io } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 
-	let socket = io('georally-backend-production.up.railway.app', {autoConnect: false});
+	let socket = io('https://georally-backend-production.up.railway.app', {autoConnect: false});
 	let status = 'Connecting...';
 	let gameId: string;
 	let playersInQueue: number;
@@ -24,10 +24,14 @@
 			playersInQueue = count;
 		});
 
+		socket.on('joinedQueue', (data: any) => {
+			window.localStorage.setItem('userId', data.userId ? data.userId : '');
+		});
+
 		socket.on('gameStart', (data: any) => {
 			gameId = data.gameId;
 			userId = data.userId;
-			window.localStorage.setItem('userId', userId ? userId : '');
+			
 			status = `Game found! Starting from ${data.start} to ${data.target}`;
 
 			setTimeout(() => {

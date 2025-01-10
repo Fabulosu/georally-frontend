@@ -2,29 +2,35 @@
 	import GameLost from '$lib/components/GameLost.svelte';
 	import GameWon from '$lib/components/GameWon.svelte';
 	import OpponentDisconnect from '$lib/components/OpponentDisconnect.svelte';
+	import OpponentLeft from '$lib/components/OpponentLeft.svelte';
 	import WorldMap from '$lib/components/WorldMap.svelte';
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
 
-	let socket = io('georally-backend-production.up.railway.app');
+	let socket = io('https://georally-backend-production.up.railway.app');
 	let gameId: string | null, start: string | null, middle: string | null, target: string | null, difficulty: string | null;
 	let error = '';
 	let currentCountry: string | null;
 	let path: any[] = [];
+
+	let savedPath: any[] = [];
+	let userId: string | null;
+	let lastGameId: string | null;
 
 	let visitedMiddleCountry = false;
 	let gameOver = false;
 	let gameWon = false;
 
 	let opponentDisconnected = false;
+	let opponentLeft = false;
 
-	let userId: string | null;
 	let oMoves = 0;
 
 	let userInput = '';
 
 	onMount(() => {
 		userId = window.localStorage.getItem('userId');
+		lastGameId = window.localStorage.getItem('lastGameId');
 
 		const params = new URLSearchParams(window.location.search);
 		gameId = params.get('gameId');
@@ -32,6 +38,15 @@
 		middle = params.get('middleCountry');
 		target = params.get('endCountry');
 		difficulty = params.get('difficulty');
+		path = [start];
+
+		if (lastGameId === gameId) {
+			const savedPathString = window.localStorage.getItem('path');
+			savedPath = savedPathString ? JSON.parse(savedPathString) : [];
+		} else {
+			window.localStorage.removeItem('path');
+			savedPath = [];
+		}
 
 		socket.emit('verifyGame', {gameId, start, middle, target, difficulty});
 
@@ -40,12 +55,29 @@
 				window.location.href = '/';
 				console.log('Invalid game');
 			} else {
+				if (savedPath.length > 0 && savedPath !== path) {
+					path = savedPath;
+					currentCountry = savedPath[savedPath.length - 1];
+					path.forEach((country) => {
+						if (country !== start && country !== middle && country !== target) {
+							const elements = document.getElementsByName(country);
+							elements.forEach((element) => {
+								(element as HTMLElement).classList.add('fill-orange-500');
+								if (difficulty === 'hard') {
+									(element as HTMLElement).classList.remove('hidden');
+								}
+							});
+						}
+					});
+				} else {
+					currentCountry = start;
+					path = [currentCountry];
+				}
+
+				window.localStorage.setItem('lastGameId', gameId ? gameId : '');
 				console.log('Game verified');
 			}
 		});
-
-		currentCountry = start;
-		path = [...path, currentCountry];
 
 		if (start) {
 			const elements = document.getElementsByName(start);
@@ -105,6 +137,8 @@
 			path = [...path, currentCountry];
 			userInput = '';
 
+			window?.localStorage.setItem('path', JSON.stringify(path));
+
 			console.log(data);
 
 			if (currentCountry) {
@@ -124,20 +158,32 @@
 				console.log(start, middle, target, currentCountry);
 				gameWon = true;
 				socket.emit('gameOver', { gameId, userId, moves: path.length });
+				window?.localStorage.removeItem('path');
 			}
 		});
 
-		socket.on('opponentLeft', () => {
+		socket.on('opponentDisconnect', () => {
 			opponentDisconnected = true;
+		});
+
+		socket.on('opponentLeft', () => {
+			opponentLeft = true;
+			opponentDisconnected = false;
+		});
+
+		socket.on('opponentReconnect', () => {
+			opponentDisconnected = false;
 		});
 
 		socket.on('opponentWon', (data) => {
 			gameOver = true;
 			oMoves = data.opponentMoves;
+			window?.localStorage.removeItem('path');
 		});
 
-		socket.on('gameWon', (data) => {
+		socket.on('gameWon', () => {
 			gameWon = true;
+			window?.localStorage.removeItem('path');
 		})
 	});
 
@@ -282,4 +328,8 @@
 
 {#if opponentDisconnected && !gameOver && !gameWon}
 	<OpponentDisconnect />
+{/if}
+
+{#if opponentLeft && !gameOver && !gameWon}
+	<OpponentLeft />
 {/if}
