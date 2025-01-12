@@ -4,12 +4,7 @@
 			<div
 				class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100"
 			>
-				<svg
-					class="h-12 w-12 text-green-500"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
+				<svg class="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path
 						stroke-linecap="round"
 						stroke-linejoin="round"

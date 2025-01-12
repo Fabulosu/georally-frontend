@@ -1,4 +1,5 @@
 <script lang="ts">
+	import GameCountdown from '$lib/components/GameCountdown.svelte';
 	import GameLost from '$lib/components/GameLost.svelte';
 	import GameWon from '$lib/components/GameWon.svelte';
 	import OpponentDisconnect from '$lib/components/OpponentDisconnect.svelte';
@@ -8,8 +9,15 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	let socket = io('https://georally-backend-production.up.railway.app');
-	let gameId: string | null, start: string | null, middle: string | null, target: string | null, difficulty: string | null;
+	let gameId: string | null,
+		start: string | null,
+		middle: string | null,
+		target: string | null,
+		difficulty: string | null;
+
 	let error = '';
+	let userInput = '';
+
 	let currentCountry: string | null;
 	let path: any[] = [];
 
@@ -17,16 +25,15 @@
 	let userId: string | null;
 	let lastGameId: string | null;
 
+	let gameStarted = false;
 	let visitedMiddleCountry = false;
 	let gameOver = false;
 	let gameWon = false;
 
+	let opponentConnected = false;
 	let opponentDisconnected = false;
 	let opponentLeft = false;
-
-	let oMoves = 0;
-
-	let userInput = '';
+	let opponentMoves = 0;
 
 	onMount(() => {
 		userId = window.localStorage.getItem('userId');
@@ -48,7 +55,7 @@
 			savedPath = [];
 		}
 
-		socket.emit('verifyGame', {gameId, start, middle, target, difficulty});
+		socket.emit('verifyGame', { gameId, start, middle, target, difficulty });
 
 		socket.on('gameVerified', (data) => {
 			if (data.invalid === true) {
@@ -122,6 +129,10 @@
 			}
 		});
 
+		socket.on('gameStarted', () => {
+			gameStarted = true;
+		});
+
 		socket.emit('rejoinGame', { gameId, userId });
 
 		socket.on('wrongAnswer', (data) => {
@@ -162,8 +173,16 @@
 			}
 		});
 
+		socket.on('opponentConnected', () => {
+			opponentConnected = true;
+		});
+
 		socket.on('opponentDisconnect', () => {
 			opponentDisconnected = true;
+		});
+
+		socket.on('opponentReconnect', () => {
+			opponentDisconnected = false;
 		});
 
 		socket.on('opponentLeft', () => {
@@ -171,27 +190,42 @@
 			opponentDisconnected = false;
 		});
 
-		socket.on('opponentReconnect', () => {
-			opponentDisconnected = false;
-		});
-
 		socket.on('opponentWon', (data) => {
 			gameOver = true;
-			oMoves = data.opponentMoves;
+			opponentMoves = data.opponentMoves;
 			window?.localStorage.removeItem('path');
 		});
 
 		socket.on('gameWon', () => {
 			gameWon = true;
 			window?.localStorage.removeItem('path');
-		})
+		});
 	});
 
 	function submitNeighbour() {
+		if (!visitedMiddleCountry && userInput === target) {
+			error = `You must visit the middle country first!`;
+			userInput = '';
+			setTimeout(() => {
+				error = '';
+			}, 2000);
+			return;
+		}
+
 		if (!visitedMiddleCountry) {
-			socket.emit('submit-neighbour', { gameId, country: currentCountry, neighbour: userInput, targetCountry: middle });
+			socket.emit('submit-neighbour', {
+				gameId,
+				country: currentCountry,
+				neighbour: userInput,
+				targetCountry: middle
+			});
 		} else {
-			socket.emit('submit-neighbour', { gameId, country: currentCountry, neighbour: userInput, targetCountry: target });
+			socket.emit('submit-neighbour', {
+				gameId,
+				country: currentCountry,
+				neighbour: userInput,
+				targetCountry: target
+			});
 		}
 	}
 
@@ -202,7 +236,7 @@
 	});
 </script>
 
-<main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+<main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" hidden={!gameStarted}>
 	<div class="mx-auto max-w-7xl">
 		<div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
 			<div
@@ -319,7 +353,7 @@
 </main>
 
 {#if gameOver}
-	<GameLost opponentMoves={oMoves} yourMoves={path.length} />
+	<GameLost opponentMoves={opponentMoves} yourMoves={path.length} />
 {/if}
 
 {#if gameWon}
@@ -332,4 +366,16 @@
 
 {#if opponentLeft && !gameOver && !gameWon}
 	<OpponentLeft />
+{/if}
+
+{#if !opponentConnected}
+	<div class="fixed inset-0 flex items-center justify-center bg-white z-50">
+		<div class="text-center">
+			<div class="text-6xl font-bold text-orange-500 mt-4" hidden={opponentConnected}>Waiting for opponent!</div>
+		</div>
+	</div>
+{/if}
+
+{#if !gameStarted && opponentConnected}
+	<GameCountdown />
 {/if}
