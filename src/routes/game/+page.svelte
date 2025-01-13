@@ -5,6 +5,7 @@
 	import OpponentDisconnect from '$lib/components/OpponentDisconnect.svelte';
 	import OpponentLeft from '$lib/components/OpponentLeft.svelte';
 	import WorldMap from '$lib/components/WorldMap.svelte';
+	import { Icon, PaperAirplane, Check } from "svelte-hero-icons";
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
 
@@ -86,6 +87,13 @@
 							});
 						}
 					});
+
+					if (path.includes(middle)) {
+						visitedMiddleCountry = true;
+						(document.getElementById('middleCountryIcon') as HTMLElement)?.classList.remove('scale-50 -rotate-180 opacity-0');
+						(document.getElementById('middleCountryIcon') as HTMLElement)?.classList.add('scale-100 rotate-0 opacity-80');
+					}
+
 				} else {
 					currentCountry = start;
 					path = [currentCountry];
@@ -252,23 +260,32 @@
 <main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" hidden={!gameStarted}>
 	<div class="mx-auto max-w-7xl">
 		<div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-			<div
-				class="transform rounded-lg bg-green-500 p-4 shadow-lg transition duration-300 hover:scale-105"
-			>
-				<h2 class="text-sm font-medium text-blue-100">Start Country</h2>
-				<p class="mt-1 text-xl font-semibold text-white">{start}</p>
+			<div class="transform rounded-lg bg-green-500 p-4 shadow-lg transition duration-300 hover:scale-105">
+				<div class="flex items-center justify-between">
+					<div>
+						<h2 class="text-sm font-medium text-blue-100">Start Country</h2>
+						<p class="mt-1 text-xl font-semibold text-white">{start}</p>
+					</div>
+					<Icon src={PaperAirplane} class="h-12 w-12 text-white opacity-80" solid/>
+				</div>
 			</div>
-			<div
-				class="transform rounded-lg bg-yellow-500 p-4 shadow-lg transition duration-300 hover:scale-105"
-			>
-				<h2 class="text-sm font-medium text-indigo-100">Middle Country</h2>
-				<p class="mt-1 text-xl font-semibold text-white">{middle}</p>
+			<div class="transform rounded-lg bg-yellow-500 p-4 shadow-lg transition duration-300 hover:scale-105">
+				<div class="flex items-center justify-between">
+					<div>
+						<h2 class="text-sm font-medium text-blue-100">Middle Country</h2>
+						<p class="mt-1 text-xl font-semibold text-white">{middle}</p>
+					</div>
+					<Icon id="middleCountryIcon" src={Check} class={`h-12 w-12 text-white transition-all duration-300 ${visitedMiddleCountry ? "scale-100 rotate-0 opacity-80" : "scale-50 -rotate-180 opacity-0"}`} solid />
+				</div>
 			</div>
-			<div
-				class="transform rounded-lg bg-blue-500 p-4 shadow-lg transition duration-300 hover:scale-105"
-			>
-				<h2 class="text-sm font-medium text-purple-100">Target Country</h2>
-				<p class="mt-1 text-xl font-semibold text-white">{target}</p>
+			<div class="transform rounded-lg bg-blue-500 p-4 shadow-lg transition duration-300 hover:scale-105">
+				<div class="flex items-center justify-between">
+					<div>
+						<h2 class="text-sm font-medium text-blue-100">Target Country</h2>
+						<p class="mt-1 text-xl font-semibold text-white">{target}</p>
+					</div>
+					<Icon src={Check} class={`h-12 w-12 text-white transition-all duration-300 ${gameWon ? "scale-100 rotate-0 opacity-80" : "scale-50 -rotate-180 opacity-0"}`} solid />
+				</div>
 			</div>
 		</div>
 		<div
