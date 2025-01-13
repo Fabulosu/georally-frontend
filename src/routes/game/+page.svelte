@@ -35,7 +35,17 @@
 	let opponentLeft = false;
 	let opponentMoves = 0;
 
+	let correctFX: HTMLAudioElement | null = null;
+	let wrongFX: HTMLAudioElement | null = null;
+	let winFX: HTMLAudioElement | null = null;
+
 	onMount(() => {
+		correctFX = new Audio('/sounds/correct.wav');
+		if (correctFX) correctFX.volume = 0.5;
+
+		winFX = new Audio('/sounds/win.wav');
+		if (winFX) winFX.volume = 0.5;
+
 		userId = window.localStorage.getItem('userId');
 		lastGameId = window.localStorage.getItem('lastGameId');
 
@@ -170,6 +180,9 @@
 				gameWon = true;
 				socket.emit('gameOver', { gameId, userId, moves: path.length });
 				window?.localStorage.removeItem('path');
+				winFX?.play();
+			} else {
+				correctFX?.play();
 			}
 		});
 
@@ -271,7 +284,7 @@
 				type="text"
 				bind:value={userInput}
 				placeholder="Type a neighbor country"
-				disabled={gameWon}
+				disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}
 				class="flex-1 rounded-lg border-2 border-orange-300 bg-white px-4 py-2 text-orange-800 placeholder-orange-300
                     focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50
                     disabled:bg-gray-100 disabled:text-gray-500"
@@ -280,7 +293,7 @@
 				}}
 			/>
 
-			<button on:click={submitNeighbour} disabled={gameWon}>Submit</button>
+			<button on:click={submitNeighbour} disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}>Submit</button>
 		</div>
 		<div
 			class="rounded-xl border-2 border-orange-400 bg-white p-4 shadow-lg"
