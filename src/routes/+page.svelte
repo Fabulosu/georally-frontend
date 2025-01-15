@@ -1,6 +1,16 @@
 <script>
+	import { page } from "$app/stores";
+	import {signOut} from '@auth/sveltekit/client'
+
 	let isHowToPlayOpen = false;
 </script>
+
+<!-- {#if $page.data.session}
+	<h1>You are logged in!</h1>
+	<button on:click={() => signOut()}>Sign out</button>
+{:else}
+	<h1>You are not logged in!</h1>
+{/if} -->
 
 <main class="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
 	<nav class="bg-white shadow-md">

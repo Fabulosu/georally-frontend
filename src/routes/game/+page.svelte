@@ -93,7 +93,7 @@
 						(document.getElementById('middleCountryIcon') as HTMLElement)?.classList.remove('scale-50 -rotate-180 opacity-0');
 						(document.getElementById('middleCountryIcon') as HTMLElement)?.classList.add('scale-100 rotate-0 opacity-80');
 					}
-
+					
 				} else {
 					currentCountry = start;
 					path = [currentCountry];
