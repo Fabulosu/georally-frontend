@@ -8,8 +8,9 @@
 	import { Icon, PaperAirplane, Check } from "svelte-hero-icons";
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
+	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
-	let socket = io('https://georally-backend-production.up.railway.app');
+	let socket = io(PUBLIC_BACKEND_URL);
 	let gameId: string | null,
 		start: string | null,
 		middle: string | null,

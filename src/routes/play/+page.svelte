@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import { io } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 
-	let socket = io('https://georally-backend-production.up.railway.app', { autoConnect: false });
+	let socket = io(PUBLIC_BACKEND_URL, { autoConnect: false });
 	let status = 'Connecting...';
 	let gameId: string;
 	let playersInQueue: number;

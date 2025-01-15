@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_BACKEND_URL } from "$env/static/public";
 	import axios from "axios";
 
 	let username = '';
@@ -29,7 +30,7 @@
 			return;
 		}
 
-		const res = await axios.post('https://georally-backend-production.up.railway.app/auth/register', {
+		const res = await axios.post(PUBLIC_BACKEND_URL + '/auth/register', {
 			username,
 			email,
 			password
