@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
+	import type {PageData} from './$types';
 	import { io } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -12,9 +13,16 @@
 
 	let userId: string | null;
 
+	export let data: PageData;
+	const session = data.session;
+
 	onMount(() => {
+
 		socket.on('connect', () => {
 			status = 'Searching for worthy opponents...';
+			if (session?.user._id) {
+				socket.emit('joinQueue', { userId: session.user._id, difficulty });
+			}
 			socket.emit('joinQueue', { difficulty });
 			inQueue = true;
 		});
