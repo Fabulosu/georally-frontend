@@ -1,6 +1,6 @@
 <script>
-	import { page } from "$app/stores";
-	import {signOut} from '@auth/sveltekit/client'
+	import { page } from '$app/stores';
+	import { signOut } from '@auth/sveltekit/client';
 
 	let isHowToPlayOpen = false;
 </script>
@@ -27,7 +27,9 @@
 						>
 							How to Play
 						</button>
-						<a href="/" class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600"
+						<a
+							href="/leaderboard"
+							class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600"
 							>Leaderboard</a
 						>
 					</div>

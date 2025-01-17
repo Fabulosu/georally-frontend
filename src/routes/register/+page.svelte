@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { PUBLIC_BACKEND_URL } from "$env/static/public";
-	import axios from "axios";
+	import { PUBLIC_BACKEND_URL } from '$env/static/public';
+	import axios from 'axios';
 
 	let username = '';
 	let email = '';

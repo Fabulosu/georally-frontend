@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
-	import type {PageData} from './$types';
+	import type { PageData } from './$types';
 	import { io } from 'socket.io-client';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -17,7 +17,6 @@
 	const session = data.session;
 
 	onMount(() => {
-
 		socket.on('connect', () => {
 			status = 'Searching for worthy opponents...';
 			if (session?.user._id) {
@@ -76,7 +75,9 @@
 				</div>
 				<div class="hidden md:block">
 					<div class="ml-10 flex items-center space-x-4">
-						<a href="/" class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600"
+						<a
+							href="/leaderboard"
+							class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600"
 							>Leaderboard</a
 						>
 					</div>

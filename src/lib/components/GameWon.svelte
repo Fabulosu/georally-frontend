@@ -61,11 +61,12 @@
 				>
 					Play Again
 				</a>
-				<button
+				<a
+					href="/leaderboard"
 					class="flex w-full transform justify-center rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:scale-105 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 				>
 					View Leaderboard
-				</button>
+				</a>
 			</div>
 		</div>
 	</div>

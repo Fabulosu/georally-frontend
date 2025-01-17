@@ -21,15 +21,15 @@
 		errorMessage = '';
 
 		try {
-			await signIn("credentials", { 
-				email, 
-				password, 
+			await signIn('credentials', {
+				email,
+				password,
 				redirect: true,
-				callbackUrl: "/"
+				callbackUrl: '/'
 			});
 		} catch (error: any) {
 			console.error(error);
-			errorMessage = "An unexpected error occurred.";
+			errorMessage = 'An unexpected error occurred.';
 		}
 	}
 </script>
@@ -87,7 +87,7 @@
 				</div>
 
 				{#if errorMessage}
-					<p class="text-sm text-center font-semibold text-red-500">{errorMessage}</p>
+					<p class="text-center text-sm font-semibold text-red-500">{errorMessage}</p>
 				{/if}
 
 				<button
