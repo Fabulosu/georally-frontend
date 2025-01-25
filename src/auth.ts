@@ -11,6 +11,7 @@ declare module '@auth/sveltekit' {
 			_id: string;
 			email: string;
 			name: string;
+			experience: number;
 		};
 
 		backendTokens: {
@@ -27,6 +28,7 @@ declare module '@auth/core/jwt' {
 			_id: string;
 			email: string;
 			name: string;
+			experience: number;
 		};
 
 		backendTokens: {
@@ -101,7 +103,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 			session.user = {
 				...token.user,
 				id: token.user._id,
-				emailVerified: null
+				emailVerified: null,
 			};
 			session.backendTokens = token.backendTokens;
 

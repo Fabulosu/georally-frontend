@@ -30,7 +30,7 @@
 		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 			<div class="flex h-16 items-center justify-between">
 				<div class="flex-shrink-0">
-					<span class="text-2xl font-bold text-orange-500">GeoRally</span>
+					<a href="/" class="text-2xl font-bold text-orange-500">GeoRally</a>
 				</div>
 				<div class="hidden md:block">
 					<div class="ml-10 flex items-center space-x-4">
@@ -58,7 +58,7 @@
 		<div class="overflow-hidden rounded-xl bg-white shadow-md">
 			<div class="overflow-x-auto">
 				<table class="min-w-full">
-					<thead class="bg-orange-50">
+					<thead class="bg-orange-100">
 						<tr>
 							<th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Rank</th>
 							<th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Player</th>

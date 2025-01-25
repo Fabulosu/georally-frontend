@@ -5,7 +5,7 @@
 	import OpponentDisconnect from '$lib/components/OpponentDisconnect.svelte';
 	import OpponentLeft from '$lib/components/OpponentLeft.svelte';
 	import WorldMap from '$lib/components/WorldMap.svelte';
-	import { Icon, PaperAirplane, Check } from 'svelte-hero-icons';
+	import { Icon, PaperAirplane, Check, Home } from 'svelte-hero-icons';
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
@@ -299,11 +299,7 @@
 						<h2 class="text-sm font-medium text-blue-100">Target Country</h2>
 						<p class="mt-1 text-xl font-semibold text-white">{target}</p>
 					</div>
-					<Icon
-						src={Check}
-						class={`h-12 w-12 text-white transition-all duration-300 ${gameWon ? 'rotate-0 scale-100 opacity-80' : '-rotate-180 scale-50 opacity-0'}`}
-						solid
-					/>
+					<Icon src={Home} class="h-12 w-12 text-white opacity-80" solid />
 				</div>
 			</div>
 		</div>

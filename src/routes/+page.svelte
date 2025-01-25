@@ -1,12 +1,24 @@
-<script>
-	import { page } from '$app/stores';
-	import { signOut } from '@auth/sveltekit/client';
+<script lang="ts">
+	// import { page } from '$app/stores';
+	// import { signOut } from '@auth/sveltekit/client';
+	// import { getRank } from '$lib/ranks';
+	// import type { PageData } from './$types';
+
+	// export let data: PageData;
+	// const session = data.session;
+	// let userRank = null;
+
+	// if (session) {
+	// 	console.log(session);
+	// 	userRank = getRank(session?.user.experience);
+	// }
 
 	let isHowToPlayOpen = false;
 </script>
 
 <!-- {#if $page.data.session}
 	<h1>You are logged in!</h1>
+	<h1>Your rank is: {userRank} </h1>
 	<button on:click={() => signOut()}>Sign out</button>
 {:else}
 	<h1>You are not logged in!</h1>
