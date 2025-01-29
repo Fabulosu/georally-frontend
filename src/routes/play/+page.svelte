@@ -20,7 +20,7 @@
 		socket.on('connect', () => {
 			status = 'Searching for worthy opponents...';
 			if (session?.user._id) {
-				socket.emit('joinQueue', { userId: session.user._id, difficulty });
+				socket.emit('joinQueue', { userId: session.user._id, userName: session.user.username, difficulty });
 			}
 			socket.emit('joinQueue', { difficulty });
 			inQueue = true;
@@ -40,7 +40,7 @@
 			gameId = data.gameId;
 			userId = data.userId;
 
-			status = `Game found! Starting from ${data.start} to ${data.target}`;
+			status = `Opponent found! Starting game with ${data.opponent.userName}`;
 
 			setTimeout(() => {
 				window.location.href = `/game?gameId=${gameId}&startCountry=${data.start}&middleCountry=${data.middle}&endCountry=${data.target}&difficulty=${data.difficulty}`;

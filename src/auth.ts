@@ -10,7 +10,7 @@ declare module '@auth/sveltekit' {
 		user: {
 			_id: string;
 			email: string;
-			name: string;
+			username: string;
 			experience: number;
 		};
 
@@ -27,7 +27,7 @@ declare module '@auth/core/jwt' {
 		user: {
 			_id: string;
 			email: string;
-			name: string;
+			username: string;
 			experience: number;
 		};
 
