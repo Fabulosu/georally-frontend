@@ -43,7 +43,7 @@
 			status = `Opponent found! Starting game with ${data.opponent.userName}`;
 
 			setTimeout(() => {
-				window.location.href = `/game?gameId=${gameId}&startCountry=${data.start}&middleCountry=${data.middle}&endCountry=${data.target}&difficulty=${data.difficulty}`;
+				window.location.href = `/game?gameId=${gameId}&startCountry=${data.start}&middleCountry=${data.middle}&endCountry=${data.target}&bannedCountry=${data.banned}&difficulty=${data.difficulty}`;
 			}, 2000);
 		});
 

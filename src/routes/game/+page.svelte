@@ -15,6 +15,7 @@
 		start: string | null,
 		middle: string | null,
 		target: string | null,
+		banned: string | null,
 		difficulty: string | null;
 
 	let error = '';
@@ -56,6 +57,7 @@
 		start = params.get('startCountry');
 		middle = params.get('middleCountry');
 		target = params.get('endCountry');
+		banned = params.get('bannedCountry');
 		difficulty = params.get('difficulty');
 		path = [start];
 
@@ -67,7 +69,7 @@
 			savedPath = [];
 		}
 
-		socket.emit('verifyGame', { gameId, start, middle, target, difficulty });
+		socket.emit('verifyGame', { gameId, start, middle, target, banned: JSON.parse(banned ? banned : ""), difficulty });
 
 		socket.on('gameVerified', (data) => {
 			if (data.invalid === true) {
@@ -141,10 +143,21 @@
 			});
 		}
 
+		if (banned) {
+			const elements = document.getElementsByName(banned);
+			elements.forEach((element) => {
+				(element as HTMLElement).classList.add('fill-red-500');
+				if ((element as HTMLElement).classList.contains('hidden')) {
+					(element as HTMLElement).classList.remove('hidden');
+					(element as HTMLElement).classList.add('fill-red-500/75');
+				}
+			});
+		}
+
 		const allPathElements = document.querySelectorAll('[name]');
 		allPathElements.forEach((element) => {
 			const name = element.getAttribute('name');
-			if (name !== start && name !== middle && name !== target) {
+			if (name !== start && name !== middle && name !== target && name !== banned) {
 				if (difficulty === 'hard') {
 					(element as HTMLElement).classList.add('hidden');
 				}
