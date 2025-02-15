@@ -69,7 +69,7 @@
 			savedPath = [];
 		}
 
-		socket.emit('verifyGame', { gameId, start, middle, target, banned: JSON.parse(banned ? banned : ""), difficulty });
+		socket.emit('verifyGame', { gameId, start, middle, target, banned: banned === 'null' ? null : banned, difficulty });
 
 		socket.on('gameVerified', (data) => {
 			if (data.invalid === true) {
