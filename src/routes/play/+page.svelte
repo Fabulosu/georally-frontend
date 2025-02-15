@@ -10,6 +10,7 @@
 	let playersInQueue: number;
 	let inQueue = false;
 	let difficulty = 'easy';
+	let gameFound = false;
 
 	let userId: string | null;
 
@@ -41,7 +42,7 @@
 			userId = data.userId;
 
 			status = `Opponent found! Starting game with ${data.opponent.userName}`;
-
+			gameFound = true;
 			setTimeout(() => {
 				window.location.href = `/game?gameId=${gameId}&startCountry=${data.start}&middleCountry=${data.middle}&endCountry=${data.target}&bannedCountry=${data.banned}&difficulty=${data.difficulty}`;
 			}, 2000);
@@ -131,7 +132,8 @@
 					<div class="mt-8 flex justify-center">
 						<button
 							on:click={cancelSearch}
-							class="rounded-full bg-gray-200 px-6 py-2 font-medium text-gray-700 transition hover:bg-gray-300"
+							class="rounded-full bg-gray-200 px-6 py-2 font-medium text-gray-700 transition hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+							disabled={gameFound}
 						>
 							Cancel Search
 						</button>
