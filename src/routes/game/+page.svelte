@@ -5,7 +5,7 @@
 	import OpponentDisconnect from '$lib/components/OpponentDisconnect.svelte';
 	import OpponentLeft from '$lib/components/OpponentLeft.svelte';
 	import WorldMap from '$lib/components/WorldMap.svelte';
-	import { Icon, PaperAirplane, Check, Home } from 'svelte-hero-icons';
+	import { Icon, PaperAirplane, Check, Home, GlobeEuropeAfrica, Map } from 'svelte-hero-icons';
 	import { io } from 'socket.io-client';
 	import { onMount, onDestroy } from 'svelte';
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
@@ -274,74 +274,116 @@
 	});
 </script>
 
-<main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6" hidden={!gameStarted}>
-	<div class="mx-auto max-w-7xl">
-		<div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-			<div
-				class="transform rounded-lg bg-green-500 p-4 shadow-lg transition duration-300 hover:scale-105"
-			>
-				<div class="flex items-center justify-between">
+<main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-6" hidden={!gameStarted}>
+	<div class="mx-auto max-w-7xl p-6">
+		<!-- Journey Cards -->
+		<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+			<!-- Start Country Card -->
+			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-400 to-green-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
+				<div class="relative z-10 flex items-center justify-between">
 					<div>
-						<h2 class="text-sm font-medium text-blue-100">Start Country</h2>
-						<p class="mt-1 text-xl font-semibold text-white">{start}</p>
+						<h2 class="text-sm font-medium text-green-100 uppercase tracking-wider">Start Country</h2>
+						<p class="mt-2 text-2xl font-bold text-white">{start}</p>
 					</div>
-					<Icon src={PaperAirplane} class="h-12 w-12 text-white opacity-80" solid />
+					<div class="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+						<Icon 
+							src={PaperAirplane} 
+							class="h-8 w-8 text-white transform -rotate-45 group-hover:scale-110 transition-transform duration-300" 
+							solid 
+						/>
+					</div>
 				</div>
+				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
-			<div
-				class="transform rounded-lg bg-yellow-500 p-4 shadow-lg transition duration-300 hover:scale-105"
-			>
-				<div class="flex items-center justify-between">
+	
+			<!-- Middle Country Card -->
+			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
+				<div class="relative z-10 flex items-center justify-between">
 					<div>
-						<h2 class="text-sm font-medium text-blue-100">Middle Country</h2>
-						<p class="mt-1 text-xl font-semibold text-white">{middle}</p>
+						<h2 class="text-sm font-medium text-yellow-100 uppercase tracking-wider">Middle Country</h2>
+						<p class="mt-2 text-2xl font-bold text-white">{middle}</p>
 					</div>
-					<Icon
-						id="middleCountryIcon"
-						src={Check}
-						class={`h-12 w-12 text-white transition-all duration-300 ${visitedMiddleCountry ? 'rotate-0 scale-100 opacity-80' : '-rotate-180 scale-50 opacity-0'}`}
-						solid
-					/>
+					<div class="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+						<Icon 
+							id="middleCountryIcon"
+							src={Check}
+							class={`h-8 w-8 text-white transition-all duration-500 ${
+								visitedMiddleCountry 
+									? 'rotate-0 scale-100 opacity-100' 
+									: '-rotate-180 scale-50 opacity-0'
+							}`}
+							solid
+						/>
+					</div>
 				</div>
+				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
-			<div
-				class="transform rounded-lg bg-blue-500 p-4 shadow-lg transition duration-300 hover:scale-105"
-			>
-				<div class="flex items-center justify-between">
+	
+			<!-- Target Country Card -->
+			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
+				<div class="relative z-10 flex items-center justify-between">
 					<div>
-						<h2 class="text-sm font-medium text-blue-100">Target Country</h2>
-						<p class="mt-1 text-xl font-semibold text-white">{target}</p>
+						<h2 class="text-sm font-medium text-blue-100 uppercase tracking-wider">Target Country</h2>
+						<p class="mt-2 text-2xl font-bold text-white">{target}</p>
 					</div>
-					<Icon src={Home} class="h-12 w-12 text-white opacity-80" solid />
+					<div class="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+						<Icon 
+							src={Home} 
+							class="h-8 w-8 text-white group-hover:scale-110 transition-transform duration-300" 
+							solid 
+						/>
+					</div>
 				</div>
+				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
 		</div>
-		<div
-			class="mb-6 transform rounded-lg bg-orange-400 p-4 shadow-lg transition duration-300 hover:shadow-xl"
-		>
-			<h2 class="text-sm font-medium text-blue-100">Your Path</h2>
-			<p class="mt-2 text-lg font-medium text-white">
-				{path.map((country) => country).join(' → ')}
-			</p>
+	
+		<!-- Path Tracker -->
+		<div class="mb-8">
+			<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-400 to-orange-600 p-6 shadow-xl transition-all duration-300 hover:shadow-2xl">
+				<div class="flex items-center gap-3 mb-3">
+					<div class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+						<Icon src={Map} class="h-5 w-5 text-white" solid />
+					</div>
+					<h2 class="text-sm font-medium text-orange-100 uppercase tracking-wider">Your Journey</h2>
+				</div>
+				<p class="mt-2 text-xl font-medium text-white leading-relaxed">
+					{path.map((country) => country).join(' → ')}
+				  </p>
+				  
+			</div>
 		</div>
-		<div class="mb-6 flex gap-4">
-			<input
-				type="text"
-				bind:value={userInput}
-				placeholder="Type a neighbor country"
-				disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}
-				class="flex-1 rounded-lg border-2 border-orange-300 bg-white px-4 py-2 text-orange-800 placeholder-orange-300
-                    focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50
-                    disabled:bg-gray-100 disabled:text-gray-500"
-				on:keydown={(e) => {
-					if (e.key === 'Enter') submitNeighbour();
-				}}
-			/>
-
+	
+		<!-- Input Section -->
+		<div class="flex gap-4 mb-4">
+			<div class="relative flex-1">
+				<input
+					type="text"
+					bind:value={userInput}
+					placeholder="Type a neighbor country"
+					disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}
+					class="w-full rounded-xl border-2 border-orange-300 bg-white/90 backdrop-blur-sm px-6 py-4 text-lg text-orange-800 placeholder-orange-300
+						focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/20
+						disabled:bg-gray-100 disabled:text-gray-500 transition-all duration-300"
+					on:keydown={(e) => {
+						if (e.key === 'Enter') submitNeighbour();
+					}}
+				/>
+				<div class="absolute right-4 top-1/2 -translate-y-1/2 text-orange-300">
+					<Icon src={GlobeEuropeAfrica} class="h-6 w-6" solid />
+				</div>
+			</div>
+	
 			<button
 				on:click={submitNeighbour}
-				disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}>Submit</button
+				disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}
+				class="px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold
+					hover:from-orange-600 hover:to-orange-700 focus:ring-4 focus:ring-orange-500/20
+					disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
+					transform transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg"
 			>
+				Submit
+			</button>
 		</div>
 		<div
 			class="rounded-xl border-2 border-orange-400 bg-white p-4 shadow-lg"
@@ -349,65 +391,6 @@
 		>
 			<div class="relative h-[500px] w-full overflow-hidden">
 				<WorldMap />
-			</div>
-		</div>
-		<div
-			class="mt-6 transform rounded-xl bg-gradient-to-br from-white to-blue-50 p-6 shadow-md transition duration-300 hover:shadow-lg"
-		>
-			<h3 class="mb-4 text-lg font-semibold text-orange-500">Game Tips</h3>
-			<div class="space-y-3">
-				<div class="flex items-start space-x-3">
-					<svg
-						class="h-6 w-6 text-orange-500"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-					<p class="text-sm text-orange-500">
-						Remember: You can only move to countries that share a border!
-					</p>
-				</div>
-				<div class="flex items-start space-x-3">
-					<svg
-						class="h-6 w-6 text-orange-500"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-						/>
-					</svg>
-					<p class="text-sm text-orange-500">Plan your route carefully - the shortest path wins!</p>
-				</div>
-				<div class="flex items-start space-x-3">
-					<svg
-						class="h-6 w-6 text-orange-500"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-					<p class="text-sm text-orange-500">
-						Quick decisions are key - you're racing against time!
-					</p>
-				</div>
 			</div>
 		</div>
 	</div>
