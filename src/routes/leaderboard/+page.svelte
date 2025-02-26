@@ -36,10 +36,6 @@
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-center space-x-6">
                         <a
-                            href="/leaderboard"
-                            class="rounded-md px-4 py-2 font-medium text-gray-600 hover:text-orange-600 transition-colors duration-300"
-                        >Leaderboard</a>
-                        <a
                             href="/play"
                             class="rounded-full bg-orange-500 px-6 py-2 font-bold text-white shadow-lg hover:bg-orange-600 transform hover:scale-105 transition-all duration-300"
                         >

@@ -68,25 +68,23 @@
 </script>
 
 <main class="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
-	<nav class="bg-white shadow-md">
-		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-			<div class="flex h-16 items-center justify-between">
-				<div class="flex-shrink-0">
-					<a href="/" class="text-2xl font-bold text-orange-500">GeoRally</a>
-				</div>
-				<div class="hidden md:block">
-					<div class="ml-10 flex items-center space-x-4">
-						<a
-							href="/leaderboard"
-							class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600"
-							>Leaderboard</a
-						>
-					</div>
-				</div>
-			</div>
-		</div>
-	</nav>
-
+	<nav class="bg-white/90 backdrop-blur-sm fixed w-full z-50 shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <div class="flex-shrink-0 animate-pulse">
+                    <a href="/" class="text-2xl font-bold text-orange-500">GeoRally</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-6">
+                        <a
+                            href="/leaderboard"
+                            class="rounded-md px-4 py-2 font-medium text-gray-600 hover:text-orange-600 transition-colors duration-300"
+                        >Leaderboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 	{#if inQueue}
 		<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
 			<div class="flex flex-col items-center justify-center">
