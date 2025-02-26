@@ -1,178 +1,176 @@
 <script lang="ts">
-	// import { page } from '$app/stores';
-	// import { signOut } from '@auth/sveltekit/client';
-	// import { getRank } from '$lib/ranks';
-	// import type { PageData } from './$types';
-
-	// export let data: PageData;
-	// const session = data.session;
-	// let userRank = null;
-
-	// if (session) {
-	// 	console.log(session);
-	// 	userRank = getRank(session?.user.experience);
-	// }
+	import { PUBLIC_BACKEND_URL } from "$env/static/public";
+	import { onMount } from "svelte";
 
 	let isHowToPlayOpen = false;
+
+	let statsData = {
+		totalPlayers: 0,
+		gamesPlayedToday: 0,
+		activePlayers: 0,
+		totalGames: 0
+	};
+
+	onMount(async () => {
+
+		const stats = await fetch(PUBLIC_BACKEND_URL + '/game/stats');
+		statsData = await stats.json();
+	});
 </script>
 
-<!-- {#if $page.data.session}
-	<h1>You are logged in!</h1>
-	<h1>Your rank is: {userRank} </h1>
-	<button on:click={() => signOut()}>Sign out</button>
-{:else}
-	<h1>You are not logged in!</h1>
-{/if} -->
-
-<main class="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
-	<nav class="bg-white shadow-md">
-		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-			<div class="flex h-16 items-center justify-between">
-				<div class="flex-shrink-0">
-					<span class="text-2xl font-bold text-orange-500">GeoRally</span>
-				</div>
-				<div class="hidden md:block">
-					<div class="ml-10 flex items-center space-x-4">
-						<button
-							on:click={() => (isHowToPlayOpen = true)}
-							class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600"
+<main class="min-h-screen bg-gradient-to-b from-orange-50 via-orange-100 to-orange-50">
+    <nav class="bg-white/90 backdrop-blur-sm fixed w-full z-50 shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <div class="flex-shrink-0 animate-pulse">
+                    <span class="text-2xl font-bold text-orange-500">GeoRally</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-6">
+                        <a
+                            href="/leaderboard"
+                            class="rounded-md px-4 py-2 font-medium text-gray-600 hover:text-orange-600 transition-colors duration-300"
+                        >Leaderboard</a>
+                        <a
+                            href="/play"
+                            class="rounded-full bg-orange-500 px-6 py-2 font-bold text-white shadow-lg hover:bg-orange-600 transform hover:scale-105 transition-all duration-300"
+                        >
+                            Play Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="relative overflow-hidden pt-16">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20">
+            <div class="text-center relative z-10">
+                <h1 class="text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl mb-8">
+                    <span class="block">Race Across the Globe in</span>
+                    <span class="block text-orange-500 animate-pulse">GeoRally</span>
+                </h1>
+                <p class="mx-auto mt-3 max-w-md text-xl text-gray-600 sm:text-2xl md:mt-5 md:max-w-3xl">
+                    Challenge players worldwide in an exciting 1v1 geography race! Navigate through countries and reach your destination first.
+                </p>
+                <div class="mt-10 flex justify-center gap-x-6">
+                    <a
+                        href="/play"
+                        class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-orange-500 rounded-full overflow-hidden transition-all duration-300 transform hover:scale-105 hover:bg-orange-600 shadow-xl"
+                    >
+                        <span class="relative z-10">Find Match</span>
+                        <div class="absolute inset-0 bg-white/20 transform translate-y-16 group-hover:translate-y-0 transition-transform duration-300"></div>
+                    </a>
+                    <button
+                        on:click={() => (isHowToPlayOpen = true)}
+                        class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-orange-600 bg-orange-100 rounded-full hover:bg-orange-200 transition-colors duration-300"
+                    >
+                        Learn More
+                    </button>
+                </div>
+            </div>
+            <div class="mt-20 relative">
+                <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden shadow-2xl">
+                    <img
+                        src="/preview.png"
+                        alt="GeoRally Gameplay"
+                        class="w-full h-full object-cover"
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="py-24 bg-white/50 backdrop-blur-sm mt-20">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-16">Why Play GeoRally?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="group rounded-xl bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105">
+					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6 text-orange-500"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
 						>
-							How to Play
-						</button>
-						<a
-							href="/leaderboard"
-							class="rounded-md px-3 py-2 font-medium text-gray-600 hover:text-orange-600"
-							>Leaderboard</a
-						>
-					</div>
-				</div>
-			</div>
-		</div>
-	</nav>
-	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-		<div class="text-center">
-			<h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-				<span class="block">Race Across the Globe in</span>
-				<span class="block text-orange-500">GeoRally</span>
-			</h1>
-			<p
-				class="mx-auto mt-3 max-w-md text-base text-gray-500 sm:text-lg md:mt-5 md:max-w-3xl md:text-xl"
-			>
-				Challenge your friends in an exciting 1v1 geography race! Navigate from country to country
-				and reach the destination first to win.
-			</p>
-			<div class="mx-auto mt-8 max-w-md sm:flex sm:justify-center md:mt-10">
-				<a
-					href="/play"
-					class="w-full transform rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg transition hover:scale-105 hover:bg-orange-600 sm:w-auto"
-				>
-					Find Match
-				</a>
-			</div>
-		</div>
-		<div class="mt-20 grid grid-cols-1 gap-8 md:grid-cols-3">
-			<div class="rounded-xl bg-white p-6 shadow-md">
-				<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-6 w-6 text-orange-500"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-				</div>
-				<h3 class="mb-2 text-lg font-semibold">Real-time Racing</h3>
-				<p class="text-gray-600">
-					Compete head-to-head in real-time against other players around the world.
-				</p>
-			</div>
-
-			<div class="rounded-xl bg-white p-6 shadow-md">
-				<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-6 w-6 text-orange-500"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
-						/>
-					</svg>
-				</div>
-				<h3 class="mb-2 text-lg font-semibold">Dynamic Routes</h3>
-				<p class="text-gray-600">
-					Each race features unique starting points and destinations for endless variety.
-				</p>
-			</div>
-
-			<div class="rounded-xl bg-white p-6 shadow-md">
-				<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-6 w-6 text-orange-500"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-						/>
-					</svg>
-				</div>
-				<h3 class="mb-2 text-lg font-semibold">Global Leaderboard</h3>
-				<p class="text-gray-600">
-					Track your progress and compete for the top spot on our worldwide leaderboard.
-				</p>
-			</div>
-		</div>
-	</div>
-
-	{#if isHowToPlayOpen}
-		<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-			<div class="w-full max-w-md rounded-lg bg-white p-6">
-				<div class="mb-4 flex items-center justify-between">
-					<h2 class="text-2xl font-bold text-gray-900">How to Play</h2>
-					<button
-						aria-label="Close modal"
-						on:click={() => (isHowToPlayOpen = false)}
-						class="text-gray-400 hover:text-gray-500"
-					>
-						<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
-								d="M6 18L18 6M6 6l12 12"
+								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
 							/>
 						</svg>
-					</button>
-				</div>
-				<div class="space-y-4">
-					<p class="text-gray-600">1. Click "Find Match" to be paired with an opponent</p>
-					<p class="text-gray-600">2. Both players start from the same country</p>
-					<p class="text-gray-600">3. Race to reach the destination country first</p>
-					<p class="text-gray-600">4. Navigate through connecting countries to reach your goal</p>
-				</div>
-			</div>
-		</div>
-	{/if}
+					</div>
+					<h3 class="mb-2 text-lg font-semibold">Real-time Racing</h3>
+					<p class="text-gray-600">
+						Compete head-to-head in real-time against other players around the world.
+					</p>
+                </div>
+				<div class="group rounded-xl bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105">
+					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6 text-orange-500"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"
+							/>
+						</svg>
+					</div>
+					<h3 class="mb-2 text-lg font-semibold">Dynamic Routes</h3>
+					<p class="text-gray-600">
+						Each race features unique starting points and destinations for endless variety.
+					</p>
+                </div>
+				<div class="group rounded-xl bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105">
+					<div class="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6 text-orange-500"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+							/>
+						</svg>
+					</div>
+					<h3 class="mb-2 text-lg font-semibold">Global Leaderboard</h3>
+					<p class="text-gray-600">
+						Track your progress and compete for the top spot on our worldwide leaderboard.
+					</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-orange-500 text-white py-16">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div>
+                    <div class="text-4xl font-bold mb-2">{statsData.totalPlayers}</div>
+                    <div class="text-orange-100">Active Players</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">195</div>
+                    <div class="text-orange-100">Countries</div>
+                </div>
+                <div>
+                    <div class="text-4xl font-bold mb-2">{statsData.totalGames}</div>
+                    <div class="text-orange-100">Games Played</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
-
 <footer class="mt-20 bg-white">
 	<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-4">
@@ -219,9 +217,6 @@
 						<a href="/" class="text-base text-gray-500 hover:text-orange-500">Home</a>
 					</li>
 					<li>
-						<a href="/" class="text-base text-gray-500 hover:text-orange-500">How to Play</a>
-					</li>
-					<li>
 						<a href="/" class="text-base text-gray-500 hover:text-orange-500">Leaderboard</a>
 					</li>
 					<li>
@@ -233,9 +228,6 @@
 			<div class="col-span-1">
 				<h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Support</h3>
 				<ul class="mt-4 space-y-4">
-					<li>
-						<a href="/" class="text-base text-gray-500 hover:text-orange-500">FAQ</a>
-					</li>
 					<li>
 						<a href="/" class="text-base text-gray-500 hover:text-orange-500">Contact Us</a>
 					</li>
