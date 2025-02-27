@@ -50,14 +50,19 @@
 	});
 </script>
 
-<div id="countdown-overlay" class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+<div id="countdown-overlay" class="fixed inset-0 z-50 flex items-center justify-center">
 	<div class="text-center">
-		<div id="countdown" class="countdown-number text-9xl font-bold text-orange-500"></div>
+		<div id="countdown" class="countdown-number text-9xl font-bold text-white"></div>
 		<div class="mt-4 text-6xl font-bold text-orange-500" hidden={countdownStarted}>Get Ready!</div>
 	</div>
 </div>
 
 <style>
+	#countdown-overlay{
+		background-image: url('/background.jpg');
+		background-size: cover;
+	}
+
 	.countdown-number {
 		opacity: 0;
 		transform: scale(0.5);

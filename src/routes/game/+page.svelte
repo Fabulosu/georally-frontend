@@ -274,7 +274,7 @@
 	});
 </script>
 
-<main class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-6" hidden={!gameStarted}>
+<main class="min-h-screen bg-gradient-to-br px-6" hidden={!gameStarted} style="background-image: url('/background.jpg'); background-size: cover;">
 	<div class="mx-auto max-w-7xl p-6">
 		<!-- Journey Cards -->
 		<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -413,9 +413,9 @@
 {/if}
 
 {#if !opponentConnected}
-	<div class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+	<div class="fixed inset-0 z-50 flex items-center justify-center" style="background-image: url('/background.jpg'); background-size: cover;">
 		<div class="text-center">
-			<div class="mt-4 text-6xl font-bold text-orange-500" hidden={opponentConnected}>
+			<div class="mt-4 text-6xl font-bold text-white" hidden={opponentConnected}>
 				Waiting for opponent!
 			</div>
 		</div>
