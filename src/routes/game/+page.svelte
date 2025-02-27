@@ -276,9 +276,7 @@
 
 <main class="min-h-screen bg-gradient-to-br px-6" hidden={!gameStarted} style="background-image: url('/background.jpg'); background-size: cover;">
 	<div class="mx-auto max-w-7xl p-6">
-		<!-- Journey Cards -->
 		<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-			<!-- Start Country Card -->
 			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-400 to-green-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">
 					<div>
@@ -295,8 +293,6 @@
 				</div>
 				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
-	
-			<!-- Middle Country Card -->
 			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">
 					<div>
@@ -318,8 +314,6 @@
 				</div>
 				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
-	
-			<!-- Target Country Card -->
 			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">
 					<div>
@@ -337,8 +331,6 @@
 				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
 		</div>
-	
-		<!-- Path Tracker -->
 		<div class="mb-8">
 			<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-400 to-orange-600 p-6 shadow-xl transition-all duration-300 hover:shadow-2xl">
 				<div class="flex items-center gap-3 mb-3">
@@ -353,8 +345,6 @@
 				  
 			</div>
 		</div>
-	
-		<!-- Input Section -->
 		<div class="flex gap-4 mb-4">
 			<div class="relative flex-1">
 				<input

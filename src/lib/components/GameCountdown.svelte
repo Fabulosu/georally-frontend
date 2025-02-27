@@ -53,7 +53,7 @@
 <div id="countdown-overlay" class="fixed inset-0 z-50 flex items-center justify-center">
 	<div class="text-center">
 		<div id="countdown" class="countdown-number text-9xl font-bold text-white"></div>
-		<div class="mt-4 text-6xl font-bold text-orange-500" hidden={countdownStarted}>Get Ready!</div>
+		<div class="mt-4 text-6xl font-bold text-white" hidden={countdownStarted}>Get Ready!</div>
 	</div>
 </div>
 
