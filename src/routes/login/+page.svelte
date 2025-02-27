@@ -35,23 +35,35 @@
 </script>
 
 <main class="min-h-screen bg-gradient-to-b from-orange-50 to-orange-100">
-	<nav class="bg-white shadow-md">
-		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-			<div class="flex h-16 items-center justify-between">
-				<div class="flex-shrink-0">
-					<a href="/" class="text-2xl font-bold text-orange-500">GeoRally</a>
-				</div>
-			</div>
-		</div>
-	</nav>
-
-	<div class="mx-auto max-w-md px-4 py-12 sm:px-6 lg:px-8">
+	<nav class="bg-white/90 backdrop-blur-sm fixed w-full z-50 shadow-sm">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <div class="flex-shrink-0 animate-pulse">
+                    <a href="/" class="text-2xl font-bold text-orange-500">GeoRally</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-6">
+                        <a
+                            href="/leaderboard"
+                            class="rounded-md px-4 py-2 font-medium text-gray-600 hover:text-orange-600 transition-colors duration-300"
+                        >Leaderboard</a>
+                        <a
+                            href="/play"
+                            class="rounded-full bg-orange-500 px-6 py-2 font-bold text-white shadow-lg hover:bg-orange-600 transform hover:scale-105 transition-all duration-300"
+                        >
+                            Play Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+	<div class="min-h-screen flex items-center mx-auto max-w-md px-4 py-12 sm:px-6 lg:px-8">
 		<div class="rounded-2xl bg-white p-8 shadow-xl">
 			<div class="mb-8 text-center">
 				<h2 class="text-3xl font-bold text-gray-900">Welcome Back!</h2>
 				<p class="mt-2 text-gray-600">Sign in to continue your geography journey</p>
 			</div>
-
 			<form class="space-y-6" on:submit={handleSubmit}>
 				<div>
 					<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
@@ -63,7 +75,6 @@
 						required
 					/>
 				</div>
-
 				<div>
 					<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
 					<input
@@ -74,22 +85,18 @@
 						required
 					/>
 				</div>
-
 				<div class="flex items-center justify-between">
 					<div class="flex items-center">
 						<Checkbox bind:checked={rememberMe} />
 						<label for="remember-me" class="block pl-2 text-sm text-gray-700">Remember me</label>
 					</div>
-
 					<a href="/" class="text-sm font-medium text-orange-600 hover:text-orange-500">
 						Forgot password?
 					</a>
 				</div>
-
 				{#if errorMessage}
 					<p class="text-center text-sm font-semibold text-red-500">{errorMessage}</p>
 				{/if}
-
 				<button
 					type="submit"
 					class="flex w-full transform justify-center rounded-full border border-transparent bg-orange-500 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:scale-105 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
@@ -97,7 +104,6 @@
 					Sign In
 				</button>
 			</form>
-
 			<div class="mt-6 text-center">
 				<p class="text-sm text-gray-600">
 					Don't have an account?
