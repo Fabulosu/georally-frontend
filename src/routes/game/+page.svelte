@@ -189,8 +189,6 @@
 
 			window?.localStorage.setItem('path', JSON.stringify(path));
 
-			console.log(data);
-
 			if (currentCountry) {
 				if (currentCountry === middle) {
 					visitedMiddleCountry = true;
@@ -205,7 +203,6 @@
 			}
 
 			if (currentCountry === target && path.includes(middle)) {
-				console.log(start, middle, target, currentCountry);
 				gameWon = true;
 				socket.emit('gameOver', { gameId, userId, moves: path.length });
 				window?.localStorage.removeItem('path');
