@@ -49,6 +49,9 @@
 		winFX = new Audio('/sounds/win.wav');
 		if (winFX) winFX.volume = 0.5;
 
+		wrongFX = new Audio('/sounds/wrong.wav');
+		if (wrongFX) wrongFX.volume = 0.5;
+
 		userId = window.localStorage.getItem('userId');
 		lastGameId = window.localStorage.getItem('lastGameId');
 
@@ -176,6 +179,7 @@
 			setTimeout(() => {
 				error = '';
 			}, 2000);
+			wrongFX?.play();
 		});
 
 		socket.on('correctAnswer', (data) => {
