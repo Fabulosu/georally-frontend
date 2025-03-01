@@ -7,8 +7,9 @@
 	import WorldMap from '$lib/components/WorldMap.svelte';
 	import { Icon, PaperAirplane, Check, Home, GlobeEuropeAfrica, Map } from 'svelte-hero-icons';
 	import { io } from 'socket.io-client';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, setContext } from 'svelte';
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
+	import Timer from '$lib/components/Timer.svelte';
 
 	let socket = io(PUBLIC_BACKEND_URL);
 	let gameId: string | null,
@@ -37,7 +38,9 @@
 	let opponentDisconnected = false;
 	let opponentLeft = false;
 	let opponentMoves = 0;
+	let timeLeft = 0;
 
+	let applyPenalty: any;
 	let correctFX: HTMLAudioElement | null = null;
 	let wrongFX: HTMLAudioElement | null = null;
 	let winFX: HTMLAudioElement | null = null;
@@ -64,11 +67,31 @@
 		difficulty = params.get('difficulty');
 		path = [start];
 
+		switch (difficulty) {
+			case "easy":
+				timeLeft = 0;
+			case "normal":
+				timeLeft = 300;
+			case "hard":
+				timeLeft = 180;
+			default:
+				break;
+		}
+
+		const outOfTime = () => {
+			socket.emit('outOfTime', { gameId, userId, moves: path.length });
+		}
+
+		setContext('noTimeLeft', { outOfTime });
+
 		if (lastGameId === gameId) {
 			const savedPathString = window.localStorage.getItem('path');
+			const savedTimeLeft = window.localStorage.getItem('timeLeft');
+			if (savedTimeLeft) timeLeft = parseInt(savedTimeLeft);
 			savedPath = savedPathString ? JSON.parse(savedPathString) : [];
 		} else {
 			window.localStorage.removeItem('path');
+			window.localStorage.removeItem('timeLeft');
 			savedPath = [];
 		}
 
@@ -87,7 +110,7 @@
 							const elements = document.getElementsByName(country);
 							elements.forEach((element) => {
 								(element as HTMLElement).classList.add('fill-orange-500');
-								if (difficulty === 'hard') {
+								if (difficulty === 'hard' || difficulty === "normal") {
 									(element as HTMLElement).classList.remove('hidden');
 								}
 							});
@@ -161,7 +184,7 @@
 		allPathElements.forEach((element) => {
 			const name = element.getAttribute('name');
 			if (name !== start && name !== middle && name !== target && name !== banned) {
-				if (difficulty === 'hard') {
+				if (difficulty === 'hard'  || difficulty === "normal") {
 					(element as HTMLElement).classList.add('hidden');
 				}
 			}
@@ -180,6 +203,16 @@
 				error = '';
 			}, 2000);
 			wrongFX?.play();
+			switch (difficulty) {
+				case "easy":
+					break;
+				case "normal":
+					applyPenalty(10);
+				case "hard":
+					applyPenalty(15);
+				default:
+					break;
+			}
 		});
 
 		socket.on('correctAnswer', (data) => {
@@ -196,7 +229,7 @@
 				const elements = document.getElementsByName(currentCountry);
 				elements.forEach((element) => {
 					(element as HTMLElement).classList.add('fill-orange-500');
-					if (difficulty === 'hard') {
+					if (difficulty === 'hard'  || difficulty === "normal") {
 						(element as HTMLElement).classList.remove('hidden');
 					}
 				});
@@ -275,10 +308,13 @@
 	});
 </script>
 
-<main class="min-h-screen bg-gradient-to-br px-6" hidden={!gameStarted} style="background-image: url('/background.jpg'); background-size: cover;">
-	<div class="mx-auto max-w-7xl p-6">
-		<div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-400 to-green-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
+<main class="min-h-screen bg-gradient-to-br px-6" style="background-image: url('/background.jpg'); background-size: cover;">
+	<div class="mx-auto max-w-7xl pt-2 px-6">
+		<div class="mb-2 grid grid-cols-1 gap-2 md:grid-cols-3">
+			{#if (difficulty === "normal" || difficulty === "hard") && gameStarted}
+				<Timer bind:exposedApplyPenalty={applyPenalty} timeLeft={timeLeft} timerPaused={opponentDisconnected}/>
+			{/if}
+			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-400 to-green-600 p-5 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">
 					<div>
 						<h2 class="text-sm font-medium text-green-100 uppercase tracking-wider">Start Country</h2>
@@ -294,7 +330,7 @@
 				</div>
 				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
-			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
+			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-400 to-yellow-600 p-5 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">
 					<div>
 						<h2 class="text-sm font-medium text-yellow-100 uppercase tracking-wider">Middle Country</h2>
@@ -315,7 +351,7 @@
 				</div>
 				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
-			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 p-6 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
+			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 p-5 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">
 					<div>
 						<h2 class="text-sm font-medium text-blue-100 uppercase tracking-wider">Target Country</h2>
@@ -332,8 +368,8 @@
 				<div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 			</div>
 		</div>
-		<div class="mb-8">
-			<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-400 to-orange-600 p-6 shadow-xl transition-all duration-300 hover:shadow-2xl">
+		<div class="mb-2">
+			<div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-400 to-orange-600 p-5 shadow-xl transition-all duration-300 hover:shadow-2xl">
 				<div class="flex items-center gap-3 mb-3">
 					<div class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
 						<Icon src={Map} class="h-5 w-5 text-white" solid />
@@ -346,7 +382,7 @@
 				  
 			</div>
 		</div>
-		<div class="flex gap-4 mb-4">
+		<div class="flex gap-4 mb-2">
 			<div class="relative flex-1">
 				<input
 					type="text"
