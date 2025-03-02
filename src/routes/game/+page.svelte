@@ -281,6 +281,15 @@
 			setTimeout(() => {
 				error = '';
 			}, 2000);
+			wrongFX?.play();
+			return;
+		} else if (difficulty === "hard" && path.includes(userInput)) {
+			error = `You can't go to a country you've already been to!`;
+			userInput = '';
+			setTimeout(() => {
+				error = '';
+			}, 2000);
+			wrongFX?.play();
 			return;
 		}
 
