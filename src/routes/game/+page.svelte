@@ -25,7 +25,6 @@
 	let currentCountry: string | null;
 	let path: any[] = [];
 
-	let savedPath: any[] = [];
 	let userId: string | null;
 	let lastGameId: string | null;
 
@@ -39,6 +38,7 @@
 	let opponentLeft = false;
 	let opponentMoves = 0;
 	let timeLeft = 0;
+	let saveDataInterval: any;
 
 	let applyPenalty: any;
 	let correctFX: HTMLAudioElement | null = null;
@@ -72,39 +72,29 @@
 				timeLeft = 0;
 			case "normal":
 				timeLeft = 300;
-			case "hard":
+			case "hard": 
 				timeLeft = 180;
 			default:
 				break;
 		}
 
 		const outOfTime = () => {
-			socket.emit('outOfTime', { gameId, userId, moves: path.length });
+			socket.emit('gameOver', { gameId, userId, moves: path.length, reason: "Your ran out of time! Your opponent won!" });
 		}
 
 		setContext('noTimeLeft', { outOfTime });
 
-		if (lastGameId === gameId) {
-			const savedPathString = window.localStorage.getItem('path');
-			const savedTimeLeft = window.localStorage.getItem('timeLeft');
-			if (savedTimeLeft) timeLeft = parseInt(savedTimeLeft);
-			savedPath = savedPathString ? JSON.parse(savedPathString) : [];
-		} else {
-			window.localStorage.removeItem('path');
-			window.localStorage.removeItem('timeLeft');
-			savedPath = [];
-		}
-
-		socket.emit('verifyGame', { gameId, start, middle, target, banned: banned === 'null' ? null : banned, difficulty });
+		socket.emit('verifyGame', { userId, gameId, start, middle, target, banned: banned === 'null' ? null : banned, difficulty });
 
 		socket.on('gameVerified', (data) => {
 			if (data.invalid === true) {
 				window.location.href = '/';
 				console.log('Invalid game');
 			} else {
-				if (savedPath.length > 0 && savedPath !== path) {
-					path = savedPath;
-					currentCountry = savedPath[savedPath.length - 1];
+				if (data.timeLeft > 0) timeLeft = data.timeLeft;
+				if (data.path.length > 0 && data.path !== path) {
+					path = data.path;
+					currentCountry = data.path[data.path.length - 1];
 					path.forEach((country) => {
 						if (country !== start && country !== middle && country !== target) {
 							const elements = document.getElementsByName(country);
@@ -219,9 +209,7 @@
 			currentCountry = data.neighbour;
 			path = [...path, currentCountry];
 			userInput = '';
-
-			window?.localStorage.setItem('path', JSON.stringify(path));
-
+			socket.emit('savePlayerData', {path, timeLeft});
 			if (currentCountry) {
 				if (currentCountry === middle) {
 					visitedMiddleCountry = true;
@@ -237,13 +225,17 @@
 
 			if (currentCountry === target && path.includes(middle)) {
 				gameWon = true;
-				socket.emit('gameOver', { gameId, userId, moves: path.length });
-				window?.localStorage.removeItem('path');
+				socket.emit('gameOver', { gameId, userId, moves: path.length, reason: "Your opponent reached the target country faster than you!" });
+				clearInterval(saveDataInterval);
 				winFX?.play();
 			} else {
 				correctFX?.play();
 			}
 		});
+
+		saveDataInterval = setInterval(() => {
+			socket.emit('savePlayerData', {path, timeLeft});
+		}, 1000);
 
 		socket.on('opponentConnected', () => {
 			opponentConnected = true;
@@ -265,12 +257,12 @@
 		socket.on('opponentWon', (data) => {
 			gameOver = true;
 			opponentMoves = data.opponentMoves;
-			window?.localStorage.removeItem('path');
+			clearInterval(saveDataInterval);
 		});
 
 		socket.on('gameWon', () => {
 			gameWon = true;
-			window?.localStorage.removeItem('path');
+			clearInterval(saveDataInterval);
 		});
 	});
 
@@ -311,6 +303,7 @@
 	}
 
 	onDestroy(() => {
+		clearInterval(saveDataInterval);
 		if (socket) {
 			socket.disconnect();
 		}
@@ -321,7 +314,7 @@
 	<div class="mx-auto max-w-7xl pt-2 px-6">
 		<div class="mb-2 grid grid-cols-1 gap-2 md:grid-cols-3">
 			{#if (difficulty === "normal" || difficulty === "hard") && gameStarted}
-				<Timer bind:exposedApplyPenalty={applyPenalty} timeLeft={timeLeft} timerPaused={opponentDisconnected}/>
+				<Timer bind:timeLeft={timeLeft} bind:exposedApplyPenalty={applyPenalty} timerPaused={opponentDisconnected}/>
 			{/if}
 			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-400 to-green-600 p-5 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">

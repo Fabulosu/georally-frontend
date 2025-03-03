@@ -21,7 +21,7 @@
 		socket.on('connect', () => {
 			status = 'Searching for worthy opponents...';
 			if (session?.user._id) {
-				socket.emit('joinQueue', { userId: session.user._id, userName: session.user.username, difficulty });
+				socket.emit('joinQueue', { userId: session.user._id, username: session.user.username, difficulty });
 			}
 			socket.emit('joinQueue', { difficulty });
 			inQueue = true;
@@ -41,7 +41,7 @@
 			gameId = data.gameId;
 			userId = data.userId;
 
-			status = `Opponent found! Starting game with ${data.opponent.userName}`;
+			status = `Opponent found! Starting game with ${data.opponent.username}`;
 			gameFound = true;
 			setTimeout(() => {
 				window.location.href = `/game?gameId=${gameId}&startCountry=${data.start}&middleCountry=${data.middle}&endCountry=${data.target}&bannedCountry=${data.banned}&difficulty=${data.difficulty}`;
@@ -268,10 +268,6 @@
 </main>
 
 <style>
-@keyframes pulse-slow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
 
 @keyframes spin-slow {
     0% { transform: rotate(0deg); }
@@ -281,10 +277,6 @@
 @keyframes spin-reverse-slower {
     0% { transform: rotate(360deg); }
     100% { transform: rotate(0deg); }
-}
-
-.animate-pulse-slow {
-    animation: pulse-slow 3s ease-in-out infinite;
 }
 
 .animate-spin-slow {

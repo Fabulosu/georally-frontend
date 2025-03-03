@@ -2,7 +2,7 @@
 <script lang="ts">
     import { onMount, onDestroy, getContext } from 'svelte';
 
-    export let timeLeft:number;
+    export let timeLeft:number = 180;
     export let timerPaused = false;
     let timerInterval: ReturnType<typeof setInterval>;
     let isShaking = false;
@@ -20,8 +20,6 @@
     function startTimer(): void {
         timerInterval = setInterval(() => {
             if (!timerPaused) timeLeft--;
-
-		    window.localStorage.setItem('timeLeft', timeLeft.toString());
             
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
