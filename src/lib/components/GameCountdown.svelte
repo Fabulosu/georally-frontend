@@ -7,6 +7,8 @@
 	let countFX: HTMLAudioElement | null = null;
 	let startFX: HTMLAudioElement | null = null;
 
+	export let playAudio:boolean = true;
+
 	onMount(() => {
 		countFX = new Audio('/sounds/count.wav');
 		if (countFX) countFX.volume = 0.5;
@@ -17,14 +19,14 @@
 		countdownStarted = true;
 		const overlay = document.getElementById('countdown-overlay') as HTMLElement;
 		const countdownElement = document.getElementById('countdown') as HTMLElement;
-
-		function updateCount() {
+		setTimeout(() => {
+			function updateCount() {
 			if (count > 1) {
 				countdownElement.textContent = (count - 1).toString();
-				countFX?.play();
+				if (playAudio) countFX?.play();
 			} else {
 				countdownElement.textContent = 'GO!';
-				startFX?.play();
+				if (playAudio) startFX?.play();
 			}
 
 			countdownElement.classList.remove('countdown-number');
@@ -47,6 +49,8 @@
 		}
 
 		updateCount();
+		}, 1000);
+		
 	});
 </script>
 
