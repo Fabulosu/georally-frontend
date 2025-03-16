@@ -12,6 +12,8 @@
 	import Timer from '$lib/components/Timer.svelte';
 
 	let socket = io(PUBLIC_BACKEND_URL);
+
+	// Game Data Variables
 	let gameId: string | null,
 		start: string | null,
 		middle: string | null,
@@ -19,28 +21,36 @@
 		banned: string | null,
 		difficulty: string | null;
 
+	// User Game Data Variables
 	let error = '';
 	let userInput = '';
-
 	let currentCountry: string | null;
 	let path: any[] = [];
-
 	let userId: string | null;
 	let lastGameId: string | null;
-
-	let gameStarted = false;
-	let visitedMiddleCountry = false;
-	let gameOver = false;
-	let gameWon = false;
-
-	let opponentConnected = false;
-	let opponentDisconnected = false;
-	let opponentLeft = false;
-	let opponentMoves = 0;
 	let timeLeft = 0;
-	let saveDataInterval: any;
+	let visitedMiddleCountry = false;
 
-	let applyPenalty: any;
+	// Game Variables
+	let gameStarted = false; // This variable is set to true when both players connect for the first time
+	let gameOver = false;
+	let gamePaused = false; // Variable used to set the game to be paused or not
+	let gameWon = false; // Variable to determine if the game is won
+	let gameLost = false; // Variable to determine if the game is lost
+	let gameEnded = false; // Variable used to determine if the game is ended or not
+
+	// Opponent Game Data Variables
+	let opponentJoined = false; // Variable used to check if the opponent has joined the room
+	let opponentConnected = false; // Variable used to determine if the opponent is connected or not
+	let opponentLeft = false; // Variable to determine if the opponent didn't reconnect after 30 seconds after disconnected
+	let opponentMoves = 0; // Variable used to get the opponent moves 
+
+	// Game Functions
+	let saveDataInterval: any; // Interval used to save the game data to the backend every 1s
+	let applyPenalty: any; // Function from the Timer component used to reduce the time from the timer
+	let playCountdownAudio: boolean = true;
+
+	// Audio Variables
 	let correctFX: HTMLAudioElement | null = null;
 	let wrongFX: HTMLAudioElement | null = null;
 	let winFX: HTMLAudioElement | null = null;
@@ -180,11 +190,7 @@
 			}
 		});
 
-		socket.on('gameStarted', () => {
-			gameStarted = true;
-		});
-
-		socket.emit('rejoinGame', { gameId, userId });
+		socket.emit('joinGame', { gameId, userId });
 
 		socket.on('wrongAnswer', (data) => {
 			error = `${data.neighbour} is not a neighbour country of ${data.country}`;
@@ -237,32 +243,43 @@
 			socket.emit('savePlayerData', {path, timeLeft});
 		}, 1000);
 
-		socket.on('opponentConnected', () => {
-			opponentConnected = true;
+		socket.on('rejoinedGame', () => {
+			playCountdownAudio = false;
 		});
 
-		socket.on('opponentDisconnect', () => {
-			opponentDisconnected = true;
-		});
-
-		socket.on('opponentReconnect', () => {
-			opponentDisconnected = false;
-		});
-
-		socket.on('opponentLeft', () => {
-			opponentLeft = true;
-			opponentDisconnected = false;
-		});
-
-		socket.on('opponentWon', (data) => {
-			gameOver = true;
-			opponentMoves = data.opponentMoves;
-			clearInterval(saveDataInterval);
+		// Game related events
+		socket.on('gameStarted', () => {
+			gameStarted = true;
 		});
 
 		socket.on('gameWon', () => {
 			gameWon = true;
 			clearInterval(saveDataInterval);
+		});
+
+		socket.on('gameLost', (data) => {
+			gameOver = true;
+			opponentMoves = data.opponentMoves;
+			clearInterval(saveDataInterval);
+		});
+
+		// Opponent related events
+		socket.on('opponentJoined', () => {
+			opponentJoined = true;
+			opponentConnected = true;
+		});
+
+		socket.on('opponentDisconnect', () => {
+			opponentConnected = false;
+		});
+
+		socket.on('opponentReconnect', () => {
+			opponentConnected = true;
+		});
+
+		socket.on('opponentLeft', () => {
+			opponentLeft = true;
+			opponentConnected = false;
 		});
 	});
 
@@ -314,7 +331,7 @@
 	<div class="mx-auto max-w-7xl pt-2 px-6">
 		<div class="mb-2 grid grid-cols-1 gap-2 md:grid-cols-3">
 			{#if (difficulty === "normal" || difficulty === "hard") && gameStarted}
-				<Timer bind:timeLeft={timeLeft} bind:exposedApplyPenalty={applyPenalty} timerPaused={opponentDisconnected}/>
+				<Timer bind:timeLeft={timeLeft} bind:exposedApplyPenalty={applyPenalty} timerPaused={!opponentConnected}/>
 			{/if}
 			<div class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-400 to-green-600 p-5 shadow-xl transition-all duration-300 hover:scale-102 hover:shadow-2xl">
 				<div class="relative z-10 flex items-center justify-between">
@@ -390,7 +407,7 @@
 					type="text"
 					bind:value={userInput}
 					placeholder="Type a neighbor country"
-					disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}
+					disabled={gameWon || gameOver || !opponentConnected || opponentLeft}
 					class="w-full rounded-xl border-2 border-orange-300 bg-white/90 backdrop-blur-sm px-6 py-4 text-lg text-orange-800 placeholder-orange-300
 						focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/20
 						disabled:bg-gray-100 disabled:text-gray-500 transition-all duration-300"
@@ -405,7 +422,7 @@
 	
 			<button
 				on:click={submitNeighbour}
-				disabled={gameWon || gameOver || opponentDisconnected || opponentLeft}
+				disabled={gameWon || gameOver || !opponentConnected || opponentLeft}
 				class="px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold
 					hover:from-orange-600 hover:to-orange-700 focus:ring-4 focus:ring-orange-500/20
 					disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
@@ -433,7 +450,7 @@
 	<GameWon yourMoves={path.length} />
 {/if}
 
-{#if opponentDisconnected && !gameOver && !gameWon}
+{#if !opponentConnected && !gameEnded}
 	<OpponentDisconnect />
 {/if}
 
@@ -441,16 +458,16 @@
 	<OpponentLeft />
 {/if}
 
-{#if !opponentConnected}
+{#if !opponentJoined}
 	<div class="fixed inset-0 z-50 flex items-center justify-center" style="background-image: url('/background.jpg'); background-size: cover;">
 		<div class="text-center">
-			<div class="mt-4 text-6xl font-bold text-white" hidden={opponentConnected}>
+			<div class="mt-4 text-6xl font-bold text-white" hidden={opponentJoined}>
 				Waiting for opponent!
 			</div>
 		</div>
 	</div>
 {/if}
 
-{#if !gameStarted && opponentConnected}
-	<GameCountdown />
+{#if !gameStarted && opponentJoined}
+	<GameCountdown playAudio={playCountdownAudio} />
 {/if}
