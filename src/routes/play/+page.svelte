@@ -257,7 +257,7 @@
                             </svg>
                         </button>
                         <button class="w-full rounded-xl border-2 border-orange-200 bg-white px-6 py-4 text-base font-semibold text-orange-600 transition-all duration-300 hover:bg-orange-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
-                            Play with Friends
+                            Play Battle Royale
                         </button>
                     </div>
                 </div>
