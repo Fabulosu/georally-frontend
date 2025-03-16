@@ -33,7 +33,6 @@
 
 	// Game Variables
 	let gameStarted = false; // This variable is set to true when both players connect for the first time
-	let gameOver = false;
 	let gamePaused = false; // Variable used to set the game to be paused or not
 	let gameWon = false; // Variable to determine if the game is won
 	let gameLost = false; // Variable to determine if the game is lost
@@ -254,11 +253,13 @@
 
 		socket.on('gameWon', () => {
 			gameWon = true;
+			gameEnded = true;
 			clearInterval(saveDataInterval);
 		});
 
 		socket.on('gameLost', (data) => {
-			gameOver = true;
+			gameLost = true;
+			gameEnded = true;
 			opponentMoves = data.opponentMoves;
 			clearInterval(saveDataInterval);
 		});
@@ -270,6 +271,7 @@
 		});
 
 		socket.on('opponentDisconnect', () => {
+			gamePaused = true;
 			opponentConnected = false;
 		});
 
@@ -280,6 +282,7 @@
 		socket.on('opponentLeft', () => {
 			opponentLeft = true;
 			opponentConnected = false;
+			gameEnded = true;
 		});
 	});
 
@@ -407,7 +410,7 @@
 					type="text"
 					bind:value={userInput}
 					placeholder="Type a neighbor country"
-					disabled={gameWon || gameOver || !opponentConnected || opponentLeft}
+					disabled={gameEnded || gamePaused}
 					class="w-full rounded-xl border-2 border-orange-300 bg-white/90 backdrop-blur-sm px-6 py-4 text-lg text-orange-800 placeholder-orange-300
 						focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/20
 						disabled:bg-gray-100 disabled:text-gray-500 transition-all duration-300"
@@ -422,7 +425,7 @@
 	
 			<button
 				on:click={submitNeighbour}
-				disabled={gameWon || gameOver || !opponentConnected || opponentLeft}
+				disabled={gameEnded || gamePaused}
 				class="px-8 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold
 					hover:from-orange-600 hover:to-orange-700 focus:ring-4 focus:ring-orange-500/20
 					disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
@@ -442,19 +445,19 @@
 	</div>
 </main>
 
-{#if gameOver}
+{#if gameLost && gameEnded}
 	<GameLost {opponentMoves} yourMoves={path.length} />
 {/if}
 
-{#if gameWon}
+{#if gameWon && gameEnded}
 	<GameWon yourMoves={path.length} />
 {/if}
 
-{#if !opponentConnected && !gameEnded}
+{#if !opponentConnected && gamePaused && !gameEnded}
 	<OpponentDisconnect />
 {/if}
 
-{#if opponentLeft && !gameOver && !gameWon}
+{#if opponentLeft && gameEnded}
 	<OpponentLeft />
 {/if}
 
