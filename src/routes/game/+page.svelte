@@ -277,6 +277,7 @@
 
 		socket.on('opponentReconnect', () => {
 			opponentConnected = true;
+			gamePaused = false;
 		});
 
 		socket.on('opponentLeft', () => {
